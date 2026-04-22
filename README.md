@@ -4,7 +4,7 @@ A hardware-software co-design study comparing fixed-point CORDIC implementations
 
 ## Overview
 
-CORDIC (COordinate Rotation DIgital Computer) [Wiki](https://en.wikipedia.org/wiki/CORDIC#) is an iterative algorithm for computing trigonometric functions using only shifts and adds, making it well-suited for hardware implementation. This project implements a 16-iteration CORDIC in:
+CORDIC (COordinate Rotation DIgital Computer) [wiki](https://en.wikipedia.org/wiki/CORDIC#) is an iterative algorithm for computing trigonometric functions using only shifts and adds, making it well-suited for hardware implementation. This project implements a 16-iteration CORDIC in:
 
 - **Verilog RTL** → synthesized and deployed on Xilinx Artix-7 FPGA (Basys 3 board)
 - **CUDA C** → executed on NVIDIA RTX 4060 GPU
