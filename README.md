@@ -4,12 +4,12 @@ A hardware-software co-design study comparing fixed-point CORDIC implementations
 
 ## Overview
 
-CORDIC (COordinate Rotation DIgital Computer) is an iterative algorithm for computing trigonometric functions using only shifts and adds, making it well-suited for hardware implementation. This project implements a 16-iteration CORDIC in:
+CORDIC (COordinate Rotation DIgital Computer) [Wiki](https://en.wikipedia.org/wiki/CORDIC#) is an iterative algorithm for computing trigonometric functions using only shifts and adds, making it well-suited for hardware implementation. This project implements a 16-iteration CORDIC in:
 
 - **Verilog RTL** → synthesized and deployed on Xilinx Artix-7 FPGA (Basys 3 board)
 - **CUDA C** → executed on NVIDIA RTX 4060 GPU
 
-Both implementations use Q2.14 fixed-point representation (16-bit signed, 14 fractional bits) to enable fair performance comparison without floating-point units.
+Both implementations use Q2.14 fixed-point representation (16-bit signed, 14 fractional bits) to enable fair performance comparison.
 
 ## Results
 
@@ -21,7 +21,7 @@ Both implementations use Q2.14 fixed-point representation (16-bit signed, 14 fra
 | RTX 4060 (compute only) | 13,540 M/s | 0.074 ms | 3072 CUDA cores |
 | RTX 4060 (end-to-end) | 1,324 M/s | 0.755 ms | includes PCIe transfer |
 
-**Key Finding**: GPU compute throughput is 135× higher than FPGA, but PCIe memory transfer overhead reduces the real-world system-level advantage to 13×. For batch sizes above 100K angles, the GPU saturates and maintains peak throughput. Below 10K angles, FPGA and GPU system performance converge due to GPU underutilization.
+**Key Observations**: GPU compute throughput is 135× higher than FPGA, but PCIe memory transfer overhead reduces the system-level advantage to 13×. For batch sizes above 100K angles, the GPU saturates and maintains peak throughput. Below 10K angles, FPGA and GPU system performance converge due to GPU underutilization.
 
 ### Throughput vs Batch Size
 ![Throughput](results/throughput_vs_N.png)
@@ -31,7 +31,7 @@ The FPGA maintains constant throughput (100 M/s) regardless of batch size due to
 ### Latency vs Batch Size
 ![Latency](results/latency_vs_N.png)
 
-FPGA latency scales linearly with N (fixed throughput). GPU kernel latency remains nearly constant due to massive parallelism, but end-to-end latency increases with N due to PCIe transfer time.
+FPGA latency scales linearly with N. GPU kernel latency remains nearly constant due to massive parallelism, but end-to-end latency increases with N due to PCIe transfer time.
 
 ### PCIe Impact on GPU Performance
 ![Compute vs System](results/compute_vs_system.png)
@@ -65,7 +65,7 @@ cos(θ) = x[16]
 sin(θ) = y[16]
 ```
 
-The algorithm converges through iterative rotations, with each iteration halving the rotation granularity.
+The algorithm converges through iterative rotations.
 
 ### FPGA Implementation
 
@@ -78,12 +78,12 @@ The Verilog design is a 16-stage pipeline where each stage performs one CORDIC i
 - **Resources**: 723 LUTs, 715 flip-flops, 0 DSP blocks
 - **Platform**: Xilinx Artix-7 xc7a35tcpg236-1 (Basys 3)
 
-The design uses only combinational shifts and adders — no DSP blocks — making it extremely area-efficient. Deployed and verified on physical hardware.
+The design uses only combinational shifts and adders — no DSP blocks — making it extremely area-efficient. Deployed and verified on physical hardware (Basys 3 board).
 
 ### Timing Report (Vivado)
 ![Timing Summary](results/timing_summary.png)
 
-All user-specified timing constraints are met. WNS = 6.395 ns confirms significant margin at 100 MHz, consistent with the 277 MHz Fmax reported by synthesis.
+A positive Worst Negative Slack (WNS) of 6.395 ns confirms comfortable timing closure at 100 MHz.
 
 ### GPU Implementation
 
@@ -91,7 +91,7 @@ The CUDA kernel assigns one thread per input angle, with each thread executing a
 
 - **Parallelism**: Thread-per-angle (up to 3072 concurrent threads per wave)
 - **Memory**: Pinned host memory (`cudaMallocHost`) for faster PCIe transfers
-- **Timing**: Hardware `cudaEvent_t` timers for microsecond-precision measurement
+- **Timing**: Hardware `cudaEvent_t` timers for precision measurement
 - **Warm-up**: One kernel execution before timing to eliminate driver initialization overhead
 - **Platform**: NVIDIA RTX 4060 (Ada Lovelace, 3072 CUDA cores, 8GB GDDR6)
 
@@ -122,7 +122,7 @@ Batch sizes swept: 1K, 10K, 100K, 1M angles. Each measurement preceded by a warm
 
 ### Validation
 
-All implementations validated against a Python floating-point reference. 1000 test vectors generated across [-π/2, π/2]. Maximum allowed error: 13 LSB in Q2.14 (≈ 0.0008 radians). Both FPGA and GPU pass with 0 errors.
+All implementations validated against a Python floating-point reference. 1000 test vectors generated across [-π/2, π/2].
 
 ---
 
@@ -172,14 +172,14 @@ python3 plot_results.py
 ```
 cordic-benchmark/
 ├── data/
-│   └── test_vectors.txt          # 1000 golden reference vectors (angle, sin, cos)
+│   └── test_vectors.txt          # 1000 reference vectors (angle, sin, cos)
 ├── src/
 │   ├── fpga/
 │   │   ├── cordic.v              # 16-stage pipelined CORDIC RTL
 │   │   ├── cordic_tb.v           # Verilog testbench
 │   │   └── cordic.xdc            # Basys 3 pin constraints
 │   └── gpu/
-│       └── cordic.cu             # CUDA kernel + benchmark harness
+│       └── cordic.cu             # CUDA kernel + benchmark 
 ├── results/
 │   ├── results.csv               # GPU benchmark data
 │   ├── timing_summary.png        # Vivado timing report screenshot
@@ -197,11 +197,11 @@ cordic-benchmark/
 
 ### Why PCIe Matters
 
-The 10× gap between GPU compute and GPU system throughput shows that memory bandwidth, not compute, is the bottleneck for this workload. At N=1M, transferring 2MB of angle data over PCIe takes longer than the actual CORDIC computation. This is a common pattern for compute-light kernels — strategies to mitigate it include batching, GPU-resident data pipelines, or overlapping transfers with CUDA streams.
+The 10× gap between GPU compute and GPU system throughput shows that memory bandwidth, not compute, is the bottleneck for this workload. At N=1M, transferring 2MB of angle data over PCIe takes longer than the actual CORDIC computation. This is a common pattern for compute-light kernels — can be mitigated by including batching, GPU-resident data pipelines or overlapping transfers with CUDA streams.
 
 ### When to Use Each Platform
 
-**FPGA** — low latency, constrained power, small batch sizes, or deterministic timing requirements  
+**FPGA** — low latency, constrained power, small batch sizes or deterministic timing requirements  
 **GPU** — throughput-first workloads, large batch sizes where PCIe overhead is amortized
 
 ---
@@ -212,6 +212,6 @@ The 10× gap between GPU compute and GPU system throughput shows that memory ban
 |--|------------|-------------|
 | Hardware | NVIDIA RTX 4060 (8GB GDDR6) | Digilent Basys 3 (xc7a35tcpg236-1) |
 | Toolchain | CUDA 12.4, nvcc 12.4.131 | Vivado 2023.2 |
-| OS / Driver | WSL2 Ubuntu 22.04, Driver 560.70 | Windows 11 |
+| OS / Driver | WSL2 Ubuntu 22.04 | Windows 11 |
 | Clock | — | 100 MHz (onboard oscillator) |
 
