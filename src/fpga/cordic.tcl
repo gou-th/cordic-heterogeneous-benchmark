@@ -24,7 +24,7 @@
 #    (Please see the '$orig_proj_dir' and '$origin_dir' variable setting below at the start of the script)
 #
 #    "cordic.v"
-#    "cordic.xdc"
+#    "cordic_xdc.xdc"
 #    "cordic_tb.sv"
 #
 # 3. The following remote source files that were added to the original project:-
@@ -38,7 +38,7 @@ proc checkRequiredFiles { origin_dir} {
   set status true
   set files [list \
  "[file normalize "$origin_dir/cordic.v"]"\
- "[file normalize "$origin_dir/cordic.xdc"]"\
+ "[file normalize "$origin_dir/cordic_xdc.xdc"]"\
  "[file normalize "$origin_dir/cordic_tb.sv"]"\
   ]
   foreach ifile $files {
