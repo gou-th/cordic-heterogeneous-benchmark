@@ -6,7 +6,7 @@ import numpy as np
 
 N_vals, kernel_ms, e2e_ms, tp_compute, tp_system = [], [], [], [], []
 
-with open("results.csv", encoding="utf-8-sig") as f:
+with open("../results/results.csv", encoding="utf-8-sig") as f:
     reader = csv.DictReader(f)
     reader.fieldnames = [name.strip() for name in reader.fieldnames if name]
     for row in reader:
@@ -85,7 +85,7 @@ plt.close()
 
 # 4. Error Distribution
 angles, err_cos, err_sin = [], [], []
-with open("verilog_errors.csv", "r") as f:
+with open("../results/verilog_errors.csv", "r") as f:
     next(f)
     for line in f:
         parts = line.strip().split(",")
