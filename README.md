@@ -44,7 +44,7 @@ At N=1M, PCIe transfers account for ~90% of total execution time, reducing effec
 ### Error Distribution (Q2.14 vs FP32 Reference)
 ![Error Distribution](results/error_distribution.png)
 
-Maximum error of 13 LSB (nearly 0.0008 radians) occurs near ±π/2 where fixed-point representation has least precision. Both FPGA and GPU produce identical outputs — the error is a property of Q2.14 arithmetic, not the platform.
+Maximum error of 13 LSB (nearly 0.0008 radians) occurs near 0 radians due to accumulated shift-truncation across the 16 pipeline stages. Both FPGA and GPU produce identical outputs — the error is a property of Q2.14 arithmetic, not the platform.
 
 ---
 
@@ -137,7 +137,7 @@ All implementations validated against a Python floating-point reference. 1000 te
 
 ### Prerequisites
 
-- **FPGA**: Vivado 2023.2+, Basys 3 board
+- **FPGA**: Vivado 2025.2, Basys 3 board
 - **GPU**: CUDA 12.0+, NVIDIA GPU (compute capability 5.0+)
 - **Python**: `matplotlib`, `numpy`
 
@@ -231,7 +231,7 @@ At N=1M, 2MB of angle data should cross PCIe 4.0 x16 at line rate in ~60µs. The
 | | GPU System | FPGA System |
 |--|------------|-------------|
 | Hardware | NVIDIA RTX 4060 (8GB GDDR6) | Digilent Basys 3 (xc7a35tcpg236-1) |
-| Toolchain | CUDA 12.4, nvcc 12.4.131 | Vivado 2023.2 |
+| Toolchain | CUDA 12.4, nvcc 12.4.131 | Vivado 2025.2 |
 | OS / Driver | WSL2 Ubuntu 22.04 | Windows 11 |
 | Clock | — | 100 MHz (onboard oscillator) |
 
