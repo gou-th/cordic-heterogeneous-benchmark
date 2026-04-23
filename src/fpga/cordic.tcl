@@ -23,10 +23,9 @@
 # 2. The following source(s) files that were local or imported into the original project.
 #    (Please see the '$orig_proj_dir' and '$origin_dir' variable setting below at the start of the script)
 #
-#    "C:/Vivado/cordic_2/cordic.srcs/sources_1/new/cordic.v"
-#    "C:/Vivado/cordic_2/cordic.srcs/constrs_1/new/cordic_xdc.xdc"
-#    "C:/Vivado/cordic_2/cordic.srcs/sim_1/new/cordic_tb.sv"
-#    "C:/Vivado/cordic_2/cordic.srcs/utils_1/imports/synth_1/cordic.dcp"
+#    "cordic.v"
+#    "cordic.xdc"
+#    "cordic_tb.sv"
 #
 # 3. The following remote source files that were added to the original project:-
 #
@@ -38,10 +37,9 @@
 proc checkRequiredFiles { origin_dir} {
   set status true
   set files [list \
- "[file normalize "$origin_dir/cordic.srcs/sources_1/new/cordic.v"]"\
- "[file normalize "$origin_dir/cordic.srcs/constrs_1/new/cordic_xdc.xdc"]"\
- "[file normalize "$origin_dir/cordic.srcs/sim_1/new/cordic_tb.sv"]"\
- "[file normalize "$origin_dir/cordic.srcs/utils_1/imports/synth_1/cordic.dcp"]"\
+ "[file normalize "$origin_dir/cordic.v"]"\
+ "[file normalize "$origin_dir/cordic.xdc"]"\
+ "[file normalize "$origin_dir/cordic_tb.sv"]"\
   ]
   foreach ifile $files {
     if { ![file isfile $ifile] } {
@@ -165,7 +163,7 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 set obj [get_filesets sources_1]
 # Import local files from the original project
 set files [list \
- [file normalize "${origin_dir}/cordic.srcs/sources_1/new/cordic.v" ]\
+ [file normalize "${origin_dir}/cordic.v" ]\
 ]
 set imported_files ""
 foreach f $files {
@@ -192,9 +190,9 @@ if {[string equal [get_filesets -quiet constrs_1] ""]} {
 set obj [get_filesets constrs_1]
 
 # Add/Import constrs file and set constrs file properties
-set file "[file normalize "$origin_dir/cordic.srcs/constrs_1/new/cordic_xdc.xdc"]"
+set file "[file normalize "$origin_dir/cordic.xdc"]"
 set file_imported [import_files -fileset constrs_1 [list $file]]
-set file "new/cordic_xdc.xdc"
+set file "cordic.xdc"
 set file_obj [get_files -of_objects [get_filesets constrs_1] [list "*$file"]]
 set_property -name "file_type" -value "XDC" -objects $file_obj
 
@@ -211,7 +209,7 @@ if {[string equal [get_filesets -quiet sim_1] ""]} {
 set obj [get_filesets sim_1]
 # Import local files from the original project
 set files [list \
- [file normalize "${origin_dir}/cordic.srcs/sim_1/new/cordic_tb.sv" ]\
+ [file normalize "${origin_dir}/cordic_tb.sv" ]\
 ]
 set imported_files ""
 foreach f $files {
@@ -222,7 +220,7 @@ foreach f $files {
 # None
 
 # Set 'sim_1' fileset file properties for local files
-set file "new/cordic_tb.sv"
+set file "cordic_tb.sv"
 set file_obj [get_files -of_objects [get_filesets sim_1] [list "*$file"]]
 set_property -name "file_type" -value "SystemVerilog" -objects $file_obj
 
@@ -232,29 +230,6 @@ set obj [get_filesets sim_1]
 set_property -name "sim_wrapper_top" -value "1" -objects $obj
 set_property -name "top" -value "cordic_tb" -objects $obj
 set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
-
-# Set 'utils_1' fileset object
-set obj [get_filesets utils_1]
-# Import local files from the original project
-set files [list \
- [file normalize "${origin_dir}/cordic.srcs/utils_1/imports/synth_1/cordic.dcp" ]\
-]
-set imported_files ""
-foreach f $files {
-  lappend imported_files [import_files -fileset utils_1 $f]
-}
-
-# Set 'utils_1' fileset file properties for remote files
-# None
-
-# Set 'utils_1' fileset file properties for local files
-set file "synth_1/cordic.dcp"
-set file_obj [get_files -of_objects [get_filesets utils_1] [list "*$file"]]
-set_property -name "netlist_only" -value "0" -objects $file_obj
-
-
-# Set 'utils_1' fileset properties
-set obj [get_filesets utils_1]
 
 set idrFlowPropertiesConstraints ""
 catch {
@@ -283,8 +258,6 @@ if { $obj != "" } {
 }
 set obj [get_runs synth_1]
 set_property -name "part" -value "xc7a35tcpg236-1" -objects $obj
-set_property -name "incremental_checkpoint" -value "$proj_dir/${_xil_proj_name_}.srcs/utils_1/imports/synth_1/cordic.dcp" -objects $obj
-set_property -name "auto_incremental_checkpoint" -value "1" -objects $obj
 set_property -name "strategy" -value "Vivado Synthesis Defaults" -objects $obj
 
 # set the current synth run
@@ -367,145 +340,6 @@ if { $obj != "" } {
 set_property -name "options.verbose" -value "1" -objects $obj
 
 }
-# Create 'impl_1_place_report_incremental_reuse_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_place_report_incremental_reuse_0] "" ] } {
-  create_report_config -report_name impl_1_place_report_incremental_reuse_0 -report_type report_incremental_reuse:1.0 -steps place_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_place_report_incremental_reuse_0]
-if { $obj != "" } {
-set_property -name "is_enabled" -value "0" -objects $obj
-
-}
-# Create 'impl_1_place_report_incremental_reuse_1' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_place_report_incremental_reuse_1] "" ] } {
-  create_report_config -report_name impl_1_place_report_incremental_reuse_1 -report_type report_incremental_reuse:1.0 -steps place_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_place_report_incremental_reuse_1]
-if { $obj != "" } {
-set_property -name "is_enabled" -value "0" -objects $obj
-
-}
-# Create 'impl_1_place_report_timing_summary_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_place_report_timing_summary_0] "" ] } {
-  create_report_config -report_name impl_1_place_report_timing_summary_0 -report_type report_timing_summary:1.0 -steps place_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_place_report_timing_summary_0]
-if { $obj != "" } {
-set_property -name "is_enabled" -value "0" -objects $obj
-set_property -name "options.max_paths" -value "10" -objects $obj
-set_property -name "options.report_unconstrained" -value "1" -objects $obj
-
-}
-# Create 'impl_1_post_place_power_opt_report_timing_summary_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_post_place_power_opt_report_timing_summary_0] "" ] } {
-  create_report_config -report_name impl_1_post_place_power_opt_report_timing_summary_0 -report_type report_timing_summary:1.0 -steps post_place_power_opt_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_post_place_power_opt_report_timing_summary_0]
-if { $obj != "" } {
-set_property -name "is_enabled" -value "0" -objects $obj
-set_property -name "options.max_paths" -value "10" -objects $obj
-set_property -name "options.report_unconstrained" -value "1" -objects $obj
-
-}
-# Create 'impl_1_phys_opt_report_timing_summary_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_phys_opt_report_timing_summary_0] "" ] } {
-  create_report_config -report_name impl_1_phys_opt_report_timing_summary_0 -report_type report_timing_summary:1.0 -steps phys_opt_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_phys_opt_report_timing_summary_0]
-if { $obj != "" } {
-set_property -name "is_enabled" -value "0" -objects $obj
-set_property -name "options.max_paths" -value "10" -objects $obj
-set_property -name "options.report_unconstrained" -value "1" -objects $obj
-
-}
-# Create 'impl_1_route_report_drc_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_drc_0] "" ] } {
-  create_report_config -report_name impl_1_route_report_drc_0 -report_type report_drc:1.0 -steps route_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_drc_0]
-if { $obj != "" } {
-
-}
-# Create 'impl_1_route_report_methodology_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_methodology_0] "" ] } {
-  create_report_config -report_name impl_1_route_report_methodology_0 -report_type report_methodology:1.0 -steps route_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_methodology_0]
-if { $obj != "" } {
-
-}
-# Create 'impl_1_route_report_power_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_power_0] "" ] } {
-  create_report_config -report_name impl_1_route_report_power_0 -report_type report_power:1.0 -steps route_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_power_0]
-if { $obj != "" } {
-
-}
-# Create 'impl_1_route_report_route_status_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_route_status_0] "" ] } {
-  create_report_config -report_name impl_1_route_report_route_status_0 -report_type report_route_status:1.0 -steps route_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_route_status_0]
-if { $obj != "" } {
-
-}
-# Create 'impl_1_route_report_timing_summary_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_timing_summary_0] "" ] } {
-  create_report_config -report_name impl_1_route_report_timing_summary_0 -report_type report_timing_summary:1.0 -steps route_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_timing_summary_0]
-if { $obj != "" } {
-set_property -name "options.max_paths" -value "10" -objects $obj
-set_property -name "options.routable_nets" -value "1" -objects $obj
-set_property -name "options.report_unconstrained" -value "1" -objects $obj
-
-}
-# Create 'impl_1_route_report_incremental_reuse_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_incremental_reuse_0] "" ] } {
-  create_report_config -report_name impl_1_route_report_incremental_reuse_0 -report_type report_incremental_reuse:1.0 -steps route_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_incremental_reuse_0]
-if { $obj != "" } {
-
-}
-# Create 'impl_1_route_report_clock_utilization_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_clock_utilization_0] "" ] } {
-  create_report_config -report_name impl_1_route_report_clock_utilization_0 -report_type report_clock_utilization:1.0 -steps route_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_clock_utilization_0]
-if { $obj != "" } {
-
-}
-# Create 'impl_1_route_report_bus_skew_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_bus_skew_0] "" ] } {
-  create_report_config -report_name impl_1_route_report_bus_skew_0 -report_type report_bus_skew:1.1 -steps route_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_route_report_bus_skew_0]
-if { $obj != "" } {
-set_property -name "options.warn_on_violation" -value "1" -objects $obj
-
-}
-# Create 'impl_1_post_route_phys_opt_report_timing_summary_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_post_route_phys_opt_report_timing_summary_0] "" ] } {
-  create_report_config -report_name impl_1_post_route_phys_opt_report_timing_summary_0 -report_type report_timing_summary:1.0 -steps post_route_phys_opt_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_post_route_phys_opt_report_timing_summary_0]
-if { $obj != "" } {
-set_property -name "options.max_paths" -value "10" -objects $obj
-set_property -name "options.report_unconstrained" -value "1" -objects $obj
-set_property -name "options.warn_on_violation" -value "1" -objects $obj
-
-}
-# Create 'impl_1_post_route_phys_opt_report_bus_skew_0' report (if not found)
-if { [ string equal [get_report_configs -of_objects [get_runs impl_1] impl_1_post_route_phys_opt_report_bus_skew_0] "" ] } {
-  create_report_config -report_name impl_1_post_route_phys_opt_report_bus_skew_0 -report_type report_bus_skew:1.1 -steps post_route_phys_opt_design -runs impl_1
-}
-set obj [get_report_configs -of_objects [get_runs impl_1] impl_1_post_route_phys_opt_report_bus_skew_0]
-if { $obj != "" } {
-set_property -name "options.warn_on_violation" -value "1" -objects $obj
-
-}
 set obj [get_runs impl_1]
 set_property -name "part" -value "xc7a35tcpg236-1" -objects $obj
 set_property -name "strategy" -value "Vivado Implementation Defaults" -objects $obj
@@ -521,53 +355,3 @@ catch {
 }
 
 puts "INFO: Project created:${_xil_proj_name_}"
-# Create 'drc_1' gadget (if not found)
-if {[string equal [get_dashboard_gadgets  [ list "drc_1" ] ] ""]} {
-create_dashboard_gadget -name {drc_1} -type drc
-}
-set obj [get_dashboard_gadgets [ list "drc_1" ] ]
-set_property -name "reports" -value "impl_1#impl_1_route_report_drc_0" -objects $obj
-
-# Create 'methodology_1' gadget (if not found)
-if {[string equal [get_dashboard_gadgets  [ list "methodology_1" ] ] ""]} {
-create_dashboard_gadget -name {methodology_1} -type methodology
-}
-set obj [get_dashboard_gadgets [ list "methodology_1" ] ]
-set_property -name "reports" -value "impl_1#impl_1_route_report_methodology_0" -objects $obj
-
-# Create 'power_1' gadget (if not found)
-if {[string equal [get_dashboard_gadgets  [ list "power_1" ] ] ""]} {
-create_dashboard_gadget -name {power_1} -type power
-}
-set obj [get_dashboard_gadgets [ list "power_1" ] ]
-set_property -name "reports" -value "impl_1#impl_1_route_report_power_0" -objects $obj
-
-# Create 'timing_1' gadget (if not found)
-if {[string equal [get_dashboard_gadgets  [ list "timing_1" ] ] ""]} {
-create_dashboard_gadget -name {timing_1} -type timing
-}
-set obj [get_dashboard_gadgets [ list "timing_1" ] ]
-set_property -name "reports" -value "impl_1#impl_1_route_report_timing_summary_0" -objects $obj
-
-# Create 'utilization_1' gadget (if not found)
-if {[string equal [get_dashboard_gadgets  [ list "utilization_1" ] ] ""]} {
-create_dashboard_gadget -name {utilization_1} -type utilization
-}
-set obj [get_dashboard_gadgets [ list "utilization_1" ] ]
-set_property -name "reports" -value "synth_1#synth_1_synth_report_utilization_0" -objects $obj
-set_property -name "run.step" -value "synth_design" -objects $obj
-set_property -name "run.type" -value "synthesis" -objects $obj
-
-# Create 'utilization_2' gadget (if not found)
-if {[string equal [get_dashboard_gadgets  [ list "utilization_2" ] ] ""]} {
-create_dashboard_gadget -name {utilization_2} -type utilization
-}
-set obj [get_dashboard_gadgets [ list "utilization_2" ] ]
-set_property -name "reports" -value "impl_1#impl_1_place_report_utilization_0" -objects $obj
-
-move_dashboard_gadget -name {utilization_1} -row 0 -col 0
-move_dashboard_gadget -name {power_1} -row 1 -col 0
-move_dashboard_gadget -name {drc_1} -row 2 -col 0
-move_dashboard_gadget -name {timing_1} -row 0 -col 1
-move_dashboard_gadget -name {utilization_2} -row 1 -col 1
-move_dashboard_gadget -name {methodology_1} -row 2 -col 1
