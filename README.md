@@ -1,6 +1,7 @@
 # CORDIC: Heterogeneous Performance Benchmark
 
 A hardware-software co-design study comparing fixed-point CORDIC implementations across FPGA and GPU architectures.
+
 This benchmark compares an identical 16-iteration Q2.14 CORDIC algorithm across a Xilinx Artix-7 FPGA and an NVIDIA RTX 4060 to analyze the real-world gap between raw compute and system-level latency.
 While the GPU boasts a massive 135× advantage in raw throughput, host-to-device PCIe overhead collapses this to just 13× for large datasets and causes end-to-end performance of the FPGA and GPU converge completely at batch sizes under 10,000.
 
