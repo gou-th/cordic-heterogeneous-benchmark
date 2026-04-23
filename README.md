@@ -83,7 +83,7 @@ The Verilog design is a 16-stage pipeline where each stage performs one CORDIC i
 - **Resources**: 723 LUTs, 715 flip-flops, 0 DSP blocks
 - **Platform**: Xilinx Artix-7 xc7a35tcpg236-1 (Basys 3)
 
-The design uses only combinational shifts and adders — no DSP blocks. The xc7a35t contains 20,800 LUTs total; this design uses 3.5%. Instantiating 25 parallel CORDIC pipelines is feasible within the same device and would push FPGA throughput to ~2.5 G/s, approaching GPU system-level performance. Deployed and verified on physical hardware.
+The design uses only combinational shifts and adders — no DSP blocks. The xc7a35t contains 20,800 LUTs total; this design uses 3.5%. Deployed and verified on physical hardware.
 
 ### Timing Report (Vivado)
 ![Timing Summary](results/timing_summary.png)
