@@ -169,7 +169,7 @@ N,kernel_ms,e2e_ms,throughput_compute_Mps,throughput_system_Mps
 
 ```bash
 cd scripts
-python3 plot_results.py
+python3 python_plot.py
 ```
 
 ---
@@ -197,7 +197,7 @@ cordic-benchmark/
 │   ├── compute_vs_system.png
 │   └── error_distribution.png
 ├── scripts/
-│   └── plot_results.py           # Matplotlib plotting script
+│   └── python_plot.py            # Matplotlib plotting script
 └── README.md
 ```
 
