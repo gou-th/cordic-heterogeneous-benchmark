@@ -4,7 +4,7 @@ A hardware-software co-design study comparing fixed-point CORDIC implementations
 
 ## Overview
 
-CORDIC (COordinate Rotation DIgital Computer) [wiki](https://en.wikipedia.org/wiki/CORDIC#) is an iterative algorithm for computing trigonometric functions using only shifts and adds, making it well-suited for hardware implementation. This project implements a 16-iteration CORDIC in:
+CORDIC (COordinate Rotation DIgital Computer) ([wiki](https://en.wikipedia.org/wiki/CORDIC#)) is an iterative algorithm for computing trigonometric functions using only shifts and adds, making it well-suited for hardware implementation. This project implements a 16-iteration CORDIC in:
 
 - **Verilog RTL** → synthesized and deployed on Xilinx Artix-7 FPGA (Basys 3 board)
 - **CUDA C** → executed on NVIDIA RTX 4060 GPU
@@ -37,6 +37,11 @@ FPGA latency scales linearly with N. GPU kernel latency remains nearly constant 
 ![Compute vs System](results/compute_vs_system.png)
 
 At N=1M, PCIe transfers account for ~90% of total execution time, reducing effective throughput from 13,540 M/s to 1,324 M/s. This demonstrates the importance of measuring system-level performance, not just kernel execution time.
+
+### Error Distribution (Q2.14 vs FP32 Reference)
+![Error Distribution](results/error_distribution.png)
+
+Maximum error of 13 LSB (nearly 0.0008 radians) occurs near ±π/2 where fixed-point representation has least precision. Both FPGA and GPU produce identical outputs — the error is a property of Q2.14 arithmetic, not the platform.
 
 ---
 
@@ -78,12 +83,12 @@ The Verilog design is a 16-stage pipeline where each stage performs one CORDIC i
 - **Resources**: 723 LUTs, 715 flip-flops, 0 DSP blocks
 - **Platform**: Xilinx Artix-7 xc7a35tcpg236-1 (Basys 3)
 
-The design uses only combinational shifts and adders — no DSP blocks — making it extremely area-efficient. Deployed and verified on physical hardware (Basys 3 board).
+The design uses only combinational shifts and adders — no DSP blocks. The xc7a35t contains 20,800 LUTs total; this design uses 3.5%. Instantiating 25 parallel CORDIC pipelines is feasible within the same device and would push FPGA throughput to ~2.5 G/s, approaching GPU system-level performance. Deployed and verified on physical hardware.
 
 ### Timing Report (Vivado)
 ![Timing Summary](results/timing_summary.png)
 
-A positive Worst Negative Slack (WNS) of 6.395 ns confirms comfortable timing closure at 100 MHz.
+A positive Worst Negative Slack (WNS) of 6.395 ns confirms comfortable timing closure at 100 MHz. Zero failing endpoints across all 703 timing paths.
 
 ### GPU Implementation
 
@@ -122,8 +127,7 @@ Batch sizes swept: 1K, 10K, 100K, 1M angles. Each measurement preceded by a warm
 
 ### Validation
 
-All implementations validated against a Python floating-point reference. 1000 test vectors generated across [-π/2, π/2].
-
+All implementations validated against a Python floating-point reference. 1000 test vectors generated across [-π/2, π/2]. Maximum error: 13 LSB in Q2.14 (0.0008 radians).
 ---
 
 ## Reproducing the Results
@@ -179,13 +183,15 @@ cordic-benchmark/
 │   │   ├── cordic_tb.v           # Verilog testbench
 │   │   └── cordic.xdc            # Basys 3 pin constraints
 │   └── gpu/
-│       └── cordic.cu             # CUDA kernel + benchmark 
+│       └── cordic.cu             # CUDA kernel + benchmark
 ├── results/
 │   ├── results.csv               # GPU benchmark data
-│   ├── timing_summary.png        # Vivado timing report screenshot
+│   ├── verilog_errors.csv        # Per-vector error log from testbench
+│   ├── timing_summary.png        # Vivado timing report
 │   ├── throughput_vs_N.png
 │   ├── latency_vs_N.png
-│   └── compute_vs_system.png
+│   ├── compute_vs_system.png
+│   └── error_distribution.png
 ├── scripts/
 │   └── plot_results.py           # Matplotlib plotting script
 └── README.md
@@ -197,12 +203,22 @@ cordic-benchmark/
 
 ### Why PCIe Matters
 
-The 10× gap between GPU compute and GPU system throughput shows that memory bandwidth, not compute, is the bottleneck for this workload. At N=1M, transferring 2MB of angle data over PCIe takes longer than the actual CORDIC computation. This is a common pattern for compute-light kernels — can be mitigated by including batching, GPU-resident data pipelines or overlapping transfers with CUDA streams.
+At N=1M, 2MB of angle data should cross PCIe 4.0 x16 at line rate in ~60µs. The measured transfer time of ~680µs reflects driver launch overhead and kernel scheduling, not raw bus bandwidth. The bottleneck is software overhead, not silicon. Techniques like CUDA streams with double-buffering or persistent kernels with GPU-resident data would significantly reduce this overhead and close the gap between compute and system throughput.
 
 ### When to Use Each Platform
 
 **FPGA** — low latency, constrained power, small batch sizes or deterministic timing requirements  
 **GPU** — throughput-first workloads, large batch sizes where PCIe overhead is amortized
+
+---
+
+## Future Work
+
+- Parallel FPGA instantiation (25× pipeline replication → ~2.5 G/s on same xc7a35t)
+- CUDA streams with double-buffering to reduce PCIe launch overhead
+- Power measurement — perf/W comparison 
+- Extended precision variants (Q4.12, Q8.8) and accuracy trade-off analysis
+- Tier-matched comparison on Kintex-7 or Alveo U50
 
 ---
 
