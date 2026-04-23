@@ -145,7 +145,7 @@ All implementations validated against a Python floating-point reference. 1000 te
 
 ```bash
 cd src/fpga
-vivado -mode batch -source build.tcl
+& cmd /c "C:\AMDTools\2025.2\Vivado\settings64.bat && vivado -mode batch -source cordic.tcl"
 ```
 
 ### GPU
@@ -184,6 +184,7 @@ cordic-benchmark/
 │   ├── fpga/
 │   │   ├── cordic.v              # 16-stage pipelined CORDIC RTL
 │   │   ├── cordic_tb.v           # Verilog testbench
+│   │   ├── cordic.tcl            # Tcl build file generated from Vivado
 │   │   └── cordic.xdc            # Basys 3 pin constraints
 │   └── gpu/
 │       └── cordic.cu             # CUDA kernel + benchmark
