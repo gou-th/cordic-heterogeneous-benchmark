@@ -184,7 +184,7 @@ cordic-benchmark/
 ├── src/
 │   ├── fpga/
 │   │   ├── cordic.v              # 16-stage pipelined CORDIC RTL
-│   │   ├── cordic_tb.v           # Verilog testbench
+│   │   ├── cordic_tb.sv          # SystemVerilog testbench
 │   │   ├── cordic.tcl            # Tcl build file generated from Vivado
 │   │   └── cordic.xdc            # Basys 3 pin constraints
 │   └── gpu/
