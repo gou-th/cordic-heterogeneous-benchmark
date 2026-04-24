@@ -130,7 +130,8 @@ Batch sizes swept: 1K, 10K, 100K, 1M angles. Each measurement preceded by a warm
 
 ### Validation
 
-All implementations validated against a Python floating-point reference. 1000 test vectors generated across [-π/2, π/2]. Maximum error: 13 LSB in Q2.14 (0.0008 radians).
+ALl implementations validated against a Python floating-point reference. 1000 test vectors generated across [-π/2, π/2]. Maximum error: 13 LSB in Q2.14 (0.0008 radians).
+
 ---
 
 ## Reproducing the Results
